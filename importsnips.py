@@ -4,6 +4,7 @@ import datetime
 import django
 import string
 import re
+import pytz
 
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'archive.settings')
@@ -46,24 +47,31 @@ for filename in os.listdir('sniparchive'):
         author = SnipAuthor(name=authorname, discordid=authorid)
         author.save()
 
+    try:
+        snip = DiscordMessage.objects.get(messageid=data[0]['msgid']).parent
+    except DiscordMessage.DoesNotExist:
+        snip = Snip()
     # Save snip
-    snip = Snip(
-        author=author,
-        timeposted=datetime.datetime.strptime(data[0]['timestamp'], timefmt),
-        title=filename.split('.')[0])
-    content = ''.join([datum['content'] for datum in data])
-    content = content.replace('```', '')
+    snip.author = author
+    timestamp = datetime.datetime.strptime(data[0]['timestamp'], timefmt)
+    snip.timeposted = timestamp.replace(tzinfo=pytz.UTC)
+    snip.title = filename.split('.')[0]
+    content = ''.join([datum['content'] for datum in data]).replace('```', '')
     snip.content = content
     snip.save()
 
     # Also save individual messages
     for datum in data:
-        msg = DiscordMessage(
-                parent=snip,
-                timestamp=datetime.datetime.strptime(datum['timestamp'], timefmt),
-                messageid=datum['msgid'],
-                channelid=datum['channelid'],
-                serverid=datum['serverid'])
+        try:
+            msg = DiscordMessage.objects.get(messageid=datum['msgid'])
+        except DiscordMessage.DoesNotExist:
+            msg = DiscordMessage()
+        msg.parent = snip
+        timestamp = datetime.datetime.strptime(datum['timestamp'], timefmt)
+        msg.timestamp = timestamp.replace(tzinfo=pytz.UTC)
+        msg.messageid = datum['msgid']
+        msg.channelid = datum['channelid']
+        msg.serverid = datum['serverid']
         msg.save()
 
     searchtext = content
