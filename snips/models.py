@@ -33,3 +33,9 @@ class Snip(models.Model):
         return reverse('snip-view', args=[self.pk])
 
 
+class DiscordMessage(models.Model):
+    parent = models.ForeignKey(Snip, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField()
+    messageid = models.CharField(max_length=255)
+    channelid = models.CharField(max_length=255)
+    serverid = models.CharField(max_length=255)
