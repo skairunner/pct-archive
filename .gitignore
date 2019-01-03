@@ -5,6 +5,8 @@
 # Secrets
 .envrc
 
+# Symlink
+sniparchive
 
 # Created by https://www.gitignore.io
 
