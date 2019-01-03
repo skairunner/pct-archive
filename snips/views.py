@@ -44,6 +44,13 @@ class SnipDetails(DetailView):
         qs = super().get_queryset()
         return qs.filter(isdeleted=False)
 
+    def get_context_data(self, **kwargs):
+        kwargs = super().get_context_data(**kwargs)
+        # Get first message to make a link
+        msg = self.object.discordmessage_set.all().order_by('timestamp').first()
+        kwargs['discordlink'] = f'https://discordapp.com/channels/{msg.serverid}/{msg.channelid}/{msg.messageid}'
+        return kwargs
+
 
 class SnipEdit(UpdateView):
     model = Snip
