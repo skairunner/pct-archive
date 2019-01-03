@@ -1,8 +1,24 @@
 {% extends "base.html" %}
 
+{% load rules %}
+
 {% block content %}
 <h1>Snip index</h1>
 {% for snip in object_list %}
-<div><a href='{{ snip.get_absolute_url }}'>{{ snip.title }}</a>  by <a href='{% url "snip-index" %}?author={{ snip.author.id }}'>{{snip.author.name }}</a></div>
+{% test_rule "can_change_snip" request.session snip as canchange %}
+<div>
+  <div class='title'><a href='{{ snip.get_absolute_url }}'>{{ snip.title }}</a></div>
+  <div>By <a href='{% url "snip-index" %}?author={{ snip.author.id }}'>{{snip.author.name }}</a></div>
+  <div>Words: {{ snip.content |wordcount }}</div>
+  <div>Characters:
+  {% for tag in snip.tags.all %}
+    <span class='charactertag tag'>{{ tag.tagname }}</span>
+  {% endfor %}
+  <div>{{ snip.summary }}</div>
+  {% if canchange %}
+  <a href='{% url "snip-edit" snip.pk %}'><button>Edit</button></a>
+  {% endif %}
+</div>
+<hr>
 {% endfor %}
 {% endblock %}

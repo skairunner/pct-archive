@@ -1,8 +1,14 @@
 {% extends "base.html" %}
 
+{% load rules %}
+
 {% block content %}
 <h1>{{ object.title }}</h1>
 <h2>{{ object.author.name }}</h2>
+{% test_rule "can_change_snip" request.session object as canchange %}
+{% if canchange %}
+<a href='{% url "snip-edit" object.id %}'>Edit</a>
+{% endif %}
 <div>
   {{ object.content_html |safe }}
 </div>

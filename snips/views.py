@@ -1,4 +1,6 @@
-from django.views.generic import ListView, DetailView
+from django.core.exceptions import PermissionDenied
+from django.views.generic import ListView, DetailView, UpdateView
+import rules
 
 from .models import Snip
 
@@ -18,3 +20,15 @@ class SnipsList(ListView):
 class SnipDetails(DetailView):
     model = Snip
     template_name = 'snips/single.html'
+
+
+class SnipEdit(UpdateView):
+    model = Snip
+    template_name = 'snips/edit.html'
+    fields = ['title', 'summary', 'content']
+
+    def get_object(self):
+        obj = super().get_object()
+        if not rules.test_rule('can_change_snip', self.request.session, obj):
+            raise PermissionDenied
+        return obj
