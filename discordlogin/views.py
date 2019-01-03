@@ -66,3 +66,8 @@ def Authenticate(request, *args, **kwargs):
         pass
 
     return HttpResponseRedirect('/')
+
+
+def EndSession(request, *args, **kwargs):
+    request.session.flush()
+    return HttpResponseRedirect('/')
