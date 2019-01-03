@@ -10,7 +10,7 @@ from snips.models import SnipAuthor
 
 
 API_BASE = 'https://discordapp.com/api'
-BASE_URL = 'http://localhost:8000'
+BASE_URL = os.environ['APP_URL']
 REDIRECT_URL = reverse_lazy('auth-redirect')
 
 
@@ -37,7 +37,7 @@ def Authenticate(request, *args, **kwargs):
         'client_secret': os.environ['DISCORD_CLIENT_SECRET'],
         'grant_type': 'authorization_code',
         'code': code,
-        'redirect_uri': 'http://localhost:8000/auth/return',
+        'redirect_uri': f'{BASE_URL}{REDIRECT_URL}',
         'scope': 'identify'
     }
     r = requests.post(

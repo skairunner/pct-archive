@@ -11,7 +11,9 @@
         </span>
         <span>
             {% if request.session.authenticated %}
-            Logged in as {{ request.session.discord_username }}
+            Logged in as
+            <img src='https://cdn.discordapp.com/avatars/{{ request.session.discord_id }}/{{ request.session.discord_avatar }}.png?size=32'>
+            {{ request.session.discord_username }}
             <a href='{% url "logout" %}'>Logout</a>
             {% else %}
             <a href='{% url "auth-landing" %}'>Login with Discord!</a>
