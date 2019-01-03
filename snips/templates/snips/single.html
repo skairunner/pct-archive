@@ -8,6 +8,7 @@
 {% test_rule "can_change_snip" request.session object as canchange %}
 {% if canchange %}
 <a href='{% url "snip-edit" object.id %}'>Edit</a>
+<a href='{% url "snip-delete" object.id %}'>Delete</a>
 {% endif %}
 <div>
   {{ object.content_html |safe }}

@@ -20,6 +20,7 @@ class Snip(models.Model):
     content = models.TextField()
     content_html = models.TextField(default='')
     tags = models.ManyToManyField(CharacterTag)
+    isdeleted = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         self.content_html = mistletoe.markdown(self.content)

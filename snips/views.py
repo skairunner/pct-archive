@@ -1,5 +1,7 @@
 from django.core.exceptions import PermissionDenied
-from django.views.generic import ListView, DetailView, UpdateView
+from django.http import HttpResponseRedirect
+from django.shortcuts import reverse
+from django.views.generic import ListView, DetailView, UpdateView, DeleteView
 import rules
 
 from .models import Snip
@@ -13,6 +15,7 @@ class SnipsList(ListView):
     def get_queryset(self):
         qs = super().get_queryset()
         author = self.request.GET.get('author', None)
+        qs = qs.filter(isdeleted=False)
         if author:
             qs = qs.filter(author=author)
         return qs.order_by('-timeposted')
@@ -34,14 +37,37 @@ class SnipDetails(DetailView):
     model = Snip
     template_name = 'snips/single.html'
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(isdeleted=False)
+
 
 class SnipEdit(UpdateView):
     model = Snip
     template_name = 'snips/edit.html'
     fields = ['title', 'summary', 'content']
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(isdeleted=False)
+
     def get_object(self):
         obj = super().get_object()
         if not rules.test_rule('can_change_snip', self.request.session, obj):
             raise PermissionDenied
         return obj
+
+
+class SnipDelete(DeleteView):
+    model = Snip
+    template_name = 'snips/delete.html'
+
+    def get_success_url(self):
+        return reverse('snip-index')
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        self.object.isdelete = True
+        self.object.save()
+        return HttpResponseRedirect(success_url)
