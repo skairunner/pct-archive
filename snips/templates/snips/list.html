@@ -8,7 +8,7 @@
   {% include "snips/pagination_fragment.html" with page_obj=page_obj list=object_list pageinfo=pageinfo %}
 {% endif %}
 {% for snip in object_list %}
-{% test_rule "can_change_snip" request.session snip as canchange %}
+{% test_rule "can_change_snip" request snip as canchange %}
 <div>
   <div class='title'><a href='{{ snip.get_absolute_url }}'>{{ snip.title }}</a></div>
   <div>By <a href='{% url "snip-index" %}?author={{ snip.author.id }}'>{{snip.author.name }}</a></div>

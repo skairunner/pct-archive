@@ -58,12 +58,20 @@ class SnipEdit(UpdateView):
         return obj
 
 
+
+
 class SnipDelete(DeleteView):
     model = Snip
     template_name = 'snips/delete.html'
 
     def get_success_url(self):
         return reverse('snip-index')
+
+    def get_object(self):
+        obj = super().get_object()
+        if not rules.test_rule('can_change_snip', self.request, obj):
+            raise PermissionDenied
+        return obj
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
