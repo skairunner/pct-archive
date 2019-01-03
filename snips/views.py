@@ -1,13 +1,15 @@
-from django import forms
+from django import forms, template
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.shortcuts import reverse
 from django.views.generic import ListView, DetailView,\
-        UpdateView, DeleteView, FormView, CreateView
+        UpdateView, DeleteView, FormView, CreateView, TemplateView
 from django.views.generic.detail import SingleObjectMixin
+import requests
 import rules
 
 from .models import Snip, CharacterTag
+from .utility import sanitize_keys
 
 
 class SnipsList(ListView):
@@ -200,5 +202,45 @@ class SnipDelete(DeleteView):
         self.object = self.get_object()
         success_url = self.get_success_url()
         self.object.isdelete = True
+        self.do_delete()
         self.object.save()
         return HttpResponseRedirect(success_url)
+
+
+class SearchForm(forms.Form):
+    searchphrase = forms.CharField()
+
+
+class Search(FormView):
+    form_class = SearchForm
+    template_name = 'snips/search.html'
+
+    def process_result(self, data):
+        out = {}
+        out['success'] = True
+        out['took'] = data['took']
+        out['hits'] = []
+        for hit in data['hits']['hits']:
+            out['hits'].append(Snip.objects.get(id=hit['_id']))
+        return out
+
+    def form_valid(self, form):
+        payload = {
+                'query': {
+                    'simple_query_string': {
+                        'fields': ['content'],
+                        'query': form.cleaned_data['searchphrase']
+                        }
+                    }
+                }
+        r = requests.get('http://localhost:9200/snips/_search', json=payload)
+        if r.status_code == 200:
+            data = r.json()
+            response = self.process_result(data)
+            return self.render_to_response(self.get_context_data(searched=True, response=response))
+        response = {
+                'success': False
+                }
+        return self.render_to_response(self.get_context_data(
+            searched=True,
+            response=response))

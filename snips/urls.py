@@ -11,4 +11,5 @@ urlpatterns = [
     path('<int:pk>/addchar', v.AddTag.as_view(), name='snip-addtag'),
     path('<int:pk>/removechar', v.RemoveTag.as_view(), name='snip-removetag'),
     path('addchar', v.CreateTag.as_view(), name='createtag'),
+    path('search', v.Search.as_view(), name='snip-search'),
 ]

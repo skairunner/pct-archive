@@ -1,0 +1,8 @@
+<div class='title'><a href='{{ snip.get_absolute_url }}'>{{ snip.title }}</a></div>
+<div>By <a href='{% url "snip-index" %}?author={{ snip.author.id }}'>{{snip.author.name }}</a></div>
+<div>Words: {{ snip.content |wordcount }}</div>
+<div>Characters:
+{% for tag in snip.tags.all %}
+  <span class='charactertag tag'>{{ tag.tagname }}</span>
+{% endfor %}
+<div>{{ snip.summary }}</div>

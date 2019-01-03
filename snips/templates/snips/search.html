@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form method='POST'>
+  {% csrf_token %}
+  {{ form.as_p }}
+  <input type='submit' value='Search'>
+</form>
+<hr>
+<div>
+  {% if searched %}
+    {% if not response.success %}
+      Failed
+    {% else %}
+      Took {{ response.took }}ms
+      {% for hit in response.hits %}
+        <div class='searchresult'>
+          {% include "snips/story-card_fragment.html" with snip=hit %}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

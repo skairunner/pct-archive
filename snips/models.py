@@ -1,5 +1,6 @@
 from django.db import models
 from django.shortcuts import reverse
+import requests
 import mistletoe
 
 
@@ -25,8 +26,26 @@ class Snip(models.Model):
     tags = models.ManyToManyField(CharacterTag)
     isdeleted = models.BooleanField(default=False)
 
+    def do_delete(self):
+        r = requests.delete(f'http://localhost:9200/snips/_doc/{self.id}')
+        if r.status_code != 200:
+            print(r.json())
+
     def save(self, *args, **kwargs):
         self.content_html = mistletoe.markdown(self.content)
+        # Also post it to Elasticsearch
+        if not self.isdeleted:
+            payload = {
+                    'title': self.title,
+                    'summary': self.summary,
+                    'content': self.content,
+                    'tags': [tag.tagname for tag in self.tags.all()],
+                    'timeposted': self.timeposted.timestamp(),
+                    'author': self.author.id
+                    }
+            r = requests.put(f'http://localhost:9200/snips/_doc/{self.id}', json=payload)
+            if r.status_code != 200:
+                print(r.json())
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
