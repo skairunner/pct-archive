@@ -23,12 +23,8 @@ class Tag:
             self.obj.save()
 
 
-TAGS = {
-    'Lisa Wilbourn (Tattletale)' : [
-        'lisa',
-        'tattletale'
-    ]
-}
+with open('tags.json') as f:
+    TAGS = json.load(f)
 tagarray = []
 
 # Set tags
