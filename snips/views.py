@@ -102,6 +102,55 @@ class AddTag(SingleObjectMixin, FormView):
         return HttpResponseRedirect(self.object.get_absolute_url())
 
 
+class RemoveTagForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        tags = kwargs.pop('tags')
+        super().__init__(*args, **kwargs)
+        for tag in tags:
+            self.fields[tag] = forms.BooleanField(required=False)
+
+
+class RemoveTag(SingleObjectMixin, FormView):
+    form_class = RemoveTagForm
+    template_name = 'snips/remove-tag.html'
+    model = Snip
+
+    def get(self, request, *args, **kwargs):
+        self.get_object(self.get_queryset())
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.get_object(self.get_queryset())
+        return super().post(request, *args, **kwargs)
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(isdeleted=False)
+
+    def get_object(self, qs=None):
+        if qs:
+            self.object = qs.get(id=self.kwargs['pk'])
+            if not rules.test_rule('can_change_snip', self.request, self.object):
+                raise PermissionDenied
+            return self.object
+        raise ValueError('Queryset is none')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        tags = [tag.tagname for tag in self.object.tags.all()]
+        kwargs['tags'] = tags
+        return kwargs
+
+    def form_valid(self, form):
+        for key, val in form.cleaned_data.items():
+            if val:
+                tag = CharacterTag.objects.get(tagname=key)
+                self.object.tags.remove(tag)
+        self.object.save()
+        print(form.cleaned_data)
+        return HttpResponseRedirect(self.object.get_absolute_url())
+
+
 class CreateTag(CreateView):
     model = CharacterTag
     template_name = 'snips/create-tag.html'

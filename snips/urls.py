@@ -9,5 +9,6 @@ urlpatterns = [
     path('<int:pk>/edit', v.SnipEdit.as_view(), name='snip-edit'),
     path('<int:pk>/delete', v.SnipDelete.as_view(), name='snip-delete'),
     path('<int:pk>/addchar', v.AddTag.as_view(), name='snip-addtag'),
+    path('<int:pk>/removechar', v.RemoveTag.as_view(), name='snip-removetag'),
     path('addchar', v.CreateTag.as_view(), name='createtag'),
 ]
