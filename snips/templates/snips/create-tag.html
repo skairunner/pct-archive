@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-<p>Markdown is enabled for snips.</p>
+<p>Create chaacter tag</p>
 <form method='POST'>
   {% csrf_token %}
   {{ form.as_p }}
-  <input type='submit' value='Save'>
+  <input type='submit' value='Create character'>
 </form>
 {% endblock %}

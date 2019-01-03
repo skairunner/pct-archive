@@ -2,7 +2,8 @@ from django import forms
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.shortcuts import reverse
-from django.views.generic import ListView, DetailView, UpdateView, DeleteView, FormView
+from django.views.generic import ListView, DetailView,\
+        UpdateView, DeleteView, FormView, CreateView
 from django.views.generic.detail import SingleObjectMixin
 import rules
 
@@ -92,6 +93,13 @@ class AddTag(SingleObjectMixin, FormView):
     def form_valid(self, form):
         self.object.tags.add(form.cleaned_data['new_tag'])
         return HttpResponseRedirect(self.object.get_absolute_url())
+
+
+class CreateTag(CreateView):
+    model = CharacterTag
+    template_name = 'snips/create-tag.html'
+    fields = ['tagname']
+    success_url = '/'
 
 
 class SnipDelete(DeleteView):

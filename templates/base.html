@@ -5,11 +5,18 @@
     </head>
 
     <body>
-    {% if request.session.authenticated %}
-      Logged in as {{ request.session.discord_username }}
-    {% else %}
-    <a href='{% url "auth-landing" %}'>Login with Discord!</a>
-    {% endif %}
+    <nav>
+        <span>
+            <a href='/'>Snips index</a>
+        </span>
+        <span>
+            {% if request.session.authenticated %}
+            Logged in as {{ request.session.discord_username }}
+            {% else %}
+            <a href='{% url "auth-landing" %}'>Login with Discord!</a>
+            {% endif %}
+        </span>
+    </nav>
     {% block content %}{% endblock content %}
     </body>
 </html>
