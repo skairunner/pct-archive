@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Snip index</h1>
+{% for snip in object_list %}
+<div><a href='{{ snip.get_absolute_url }}'>{{ snip.title }}</a>  by <a href='{% url "snip-index" %}?author={{ snip.author.id }}'>{{snip.author.name }}</a></div>
+{% endfor %}
+{% endblock %}

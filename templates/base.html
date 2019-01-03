@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{% block title %}{% endblock title %} [PCT Archive]</title>
+    </head>
+
+    <body>
+    {% if request.session.loggedin %}
+      {{ request.session.discordname }}
+    {% else %}
+      <a href='{% url "auth-landing" %}'>Login with Discord!</a>
+    {% endif %}
+    {% block content %}{% endblock content %}
+    </body>
+</html>
