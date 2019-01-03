@@ -5,10 +5,10 @@
     </head>
 
     <body>
-    {% if request.session.loggedin %}
-      {{ request.session.discordname }}
+    {% if request.session.authenticated %}
+      {{ request.session.discord_username }}
     {% else %}
-      <a href='{% url "auth-landing" %}'>Login with Discord!</a>
+    <a href='{% url "auth-landing" %}'>Login with Discord!</a>
     {% endif %}
     {% block content %}{% endblock content %}
     </body>

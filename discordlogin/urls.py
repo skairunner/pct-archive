@@ -1,8 +1,9 @@
-from discord.urls import path
+from django.urls import path
 
 from . import views as v
 
 
 urlpatterns = [
-    path('', a.LinkToDiscord.as_view(), name='auth-landing'),
+    path('', v.LinkToDiscord.as_view(), name='auth-landing'),
+    path('return', v.Authenticate, name='auth-redirect'),
 ]

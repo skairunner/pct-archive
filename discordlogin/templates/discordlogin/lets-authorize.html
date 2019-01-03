@@ -1,3 +1,8 @@
 {% extends "base.html" %}
 
-{% 
+{% block content %}
+<div>
+  <p>Click the button below to authenticate using Discord!</p>
+  <p><a href='{{ oauth_url }}'>Authenticate</a></p>
+</div>
+{% endblock %}
