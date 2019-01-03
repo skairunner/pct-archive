@@ -3,19 +3,20 @@ import json
 import datetime
 import django
 import string
+import re
 
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'archive.settings')
 django.setup()
 
-from snips.models import Snip, SnipAuthor, CharacterTag
+from snips.models import Snip, SnipAuthor, CharacterTag, DiscordMessage
 
 timefmt = '%Y-%m-%d %H:%M:%S'
 
 class Tag:
-    def __init__(self, tag, keywords):
+    def __init__(self, tag, regexes):
         self.tag = tag
-        self.keywords = keywords
+        self.regexes = regexes
         try:
             self.obj = CharacterTag.objects.get(tagname=tag)
         except CharacterTag.DoesNotExist:
@@ -28,12 +29,8 @@ with open('tags.json') as f:
 tagarray = []
 
 # Set tags
-for tag, keywords in TAGS.items():
-    tagarray.append(Tag(tag, keywords))
-
-
-# Filter special
-transdict = {ord(c): None for c in string.punctuation + '\n'}
+for tag, regex in TAGS.items():
+    tagarray.append(Tag(tag, regex))
 
 
 for filename in os.listdir('sniparchive'):
@@ -59,11 +56,21 @@ for filename in os.listdir('sniparchive'):
     snip.content = content
     snip.save()
 
-    words = content.lower().translate(transdict).split(' ')
+    # Also save individual messages
+    for datum in data:
+        msg = DiscordMessage(
+                parent=snip,
+                timestamp=datetime.datetime.strptime(datum['timestamp'], timefmt),
+                messageid=datum['msgid'],
+                channelid=datum['channelid'],
+                serverid=datum['serverid'])
+        msg.save()
+
+    searchtext = content
     # Guess character tags
     for tag in tagarray:
-        for keyword in tag.keywords:
-            if keyword in words:
+        for regex in tag.regexes:
+            if re.search(regex, searchtext):
                 snip.tags.add(tag.obj)
                 break
     snip.save()
