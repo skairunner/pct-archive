@@ -4,6 +4,9 @@
 
 {% block content %}
 <h1>Snip index</h1>
+{% if is_paginated %}
+  {% include "snips/pagination_fragment.html" with page_obj=page_obj %}
+{% endif %}
 {% for snip in object_list %}
 {% test_rule "can_change_snip" request.session snip as canchange %}
 <div>
@@ -21,4 +24,7 @@
 </div>
 <hr>
 {% endfor %}
+{% if is_paginated %}
+  {% include "snips/pagination_fragment.html" with page_obj=page_obj %}
+{% endif %}
 {% endblock %}

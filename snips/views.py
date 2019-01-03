@@ -8,6 +8,7 @@ from .models import Snip
 class SnipsList(ListView):
     model = Snip
     template_name = 'snips/list.html'
+    paginate_by = 50
 
     def get_queryset(self):
         qs = super().get_queryset()
