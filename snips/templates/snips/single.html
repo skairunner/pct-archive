@@ -5,6 +5,11 @@
 {% block content %}
 <h1>{{ object.title }}</h1>
 <h2>{{ object.author.name }}</h2>
+<div class='characters'>Characters: 
+{% for tag in object.tags.all %}
+  <span class='character'>{{ tag.tagname }}</span>
+{% endfor %}
+</div>
 {% test_rule "can_change_snip" request object as canchange %}
 {% if canchange %}
 <a href='{% url "snip-edit" object.id %}'>Edit</a>

@@ -6,7 +6,7 @@
 
     <body>
     {% if request.session.authenticated %}
-      {{ request.session.discord_username }}
+      Logged in as {{ request.session.discord_username }}
     {% else %}
     <a href='{% url "auth-landing" %}'>Login with Discord!</a>
     {% endif %}

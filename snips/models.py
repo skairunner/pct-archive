@@ -11,6 +11,9 @@ class SnipAuthor(models.Model):
 class CharacterTag(models.Model):
     tagname = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.tagname
+
 
 class Snip(models.Model):
     author = models.ForeignKey(SnipAuthor, on_delete=models.CASCADE)

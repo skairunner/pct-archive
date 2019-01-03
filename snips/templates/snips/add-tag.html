@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<p>Adding a character to <a href='{{ object.get_absolute_url }}'>{{ object.title }}</a> by {{ object.author.name }}</p>
+<form method='POST'>
+  {% csrf_token %}
+  {{ form.as_p }}
+  <input type='submit' value='Add'>
+</form>
+{% endblock %}

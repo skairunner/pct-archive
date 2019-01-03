@@ -1,10 +1,12 @@
+from django import forms
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.shortcuts import reverse
-from django.views.generic import ListView, DetailView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, UpdateView, DeleteView, FormView
+from django.views.generic.detail import SingleObjectMixin
 import rules
 
-from .models import Snip
+from .models import Snip, CharacterTag
 
 
 class SnipsList(ListView):
@@ -53,11 +55,43 @@ class SnipEdit(UpdateView):
 
     def get_object(self):
         obj = super().get_object()
-        if not rules.test_rule('can_change_snip', self.request.session, obj):
+        if not rules.test_rule('can_change_snip', self.request, obj):
             raise PermissionDenied
         return obj
 
 
+class AddTagForm(forms.Form):
+    new_tag = forms.ModelChoiceField(queryset=CharacterTag.objects.all())
+
+
+class AddTag(SingleObjectMixin, FormView):
+    form_class = AddTagForm
+    template_name = 'snips/add-tag.html'
+    model = Snip
+
+    def get(self, request, *args, **kwargs):
+        self.get_object(self.get_queryset())
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.get_object(self.get_queryset())
+        return super().post(request, *args, **kwargs)
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(isdeleted=False)
+
+    def get_object(self, qs=None):
+        if qs:
+            self.object = qs.get(id=self.kwargs['pk'])
+            if not rules.test_rule('can_change_snip', self.request, self.object):
+                raise PermissionDenied
+            return self.object
+        raise ValueError('Queryset is none')
+
+    def form_valid(self, form):
+        self.object.tags.add(form.cleaned_data['new_tag'])
+        return HttpResponseRedirect(self.object.get_absolute_url())
 
 
 class SnipDelete(DeleteView):
