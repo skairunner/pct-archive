@@ -17,6 +17,18 @@ class SnipsList(ListView):
             qs = qs.filter(author=author)
         return qs.order_by('-timeposted')
 
+    def get_context_data(self, **kwargs):
+        kwargs = super().get_context_data(**kwargs)
+        paginator = kwargs['page_obj']
+        objs = kwargs['object_list']
+        snips_before = (paginator.number - 1) * self.paginate_by
+        kwargs['pageinfo'] = {
+                'total_snips': self.get_queryset().count(),
+                'snips_from': snips_before + 1,
+                'snips_to': snips_before + len(objs),
+            }
+        return kwargs
+
 
 class SnipDetails(DetailView):
     model = Snip
