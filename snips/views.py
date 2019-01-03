@@ -72,8 +72,25 @@ class AddTagForm(forms.Form):
     new_tag = forms.ModelChoiceField(queryset=CharacterTag.objects.all())
 
 
+class TagForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        tags = kwargs.pop('tags')
+        if 'checked' in kwargs:
+            checked = kwargs.pop('checked')
+        else:
+            checked = None
+
+        super().__init__(*args, **kwargs)
+        for tag in tags:
+            default = tag in checked if checked else False
+            self.fields[tag] = forms.BooleanField(
+                    required=False,
+                    initial=default,
+                    label=tag)
+
+
 class AddTag(SingleObjectMixin, FormView):
-    form_class = AddTagForm
+    form_class = TagForm
     template_name = 'snips/add-tag.html'
     model = Snip
 
@@ -97,21 +114,25 @@ class AddTag(SingleObjectMixin, FormView):
             return self.object
         raise ValueError('Queryset is none')
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        tags = [tag.tagname for tag in
+                CharacterTag.objects.all().order_by('tagname')]
+        exists = [tag.tagname for tag in self.object.tags.all()]
+        kwargs['tags'] = tags
+        kwargs['checked'] = exists
+        return kwargs
+
     def form_valid(self, form):
-        self.object.tags.add(form.cleaned_data['new_tag'])
+        for key, val in form.cleaned_data.items():
+            if val:
+                tag = CharacterTag.objects.get(tagname=key)
+                self.object.tags.add(tag)
         return HttpResponseRedirect(self.object.get_absolute_url())
 
 
-class RemoveTagForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        tags = kwargs.pop('tags')
-        super().__init__(*args, **kwargs)
-        for tag in tags:
-            self.fields[tag] = forms.BooleanField(required=False)
-
-
 class RemoveTag(SingleObjectMixin, FormView):
-    form_class = RemoveTagForm
+    form_class = TagForm
     template_name = 'snips/remove-tag.html'
     model = Snip
 
@@ -155,7 +176,11 @@ class CreateTag(CreateView):
     model = CharacterTag
     template_name = 'snips/create-tag.html'
     fields = ['tagname']
-    success_url = '/'
+
+    def get_success_url(self):
+        if 'return' in self.request.GET:
+            return self.request.GET.get('return')
+        return '/'
 
 
 class SnipDelete(DeleteView):

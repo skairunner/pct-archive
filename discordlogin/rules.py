@@ -15,3 +15,4 @@ def session_is_admin(request, snip):
 
 
 rules.add_rule('can_change_snip', session_is_snip_author | session_is_admin)
+rules.add_rule('is_admin', session_is_admin)

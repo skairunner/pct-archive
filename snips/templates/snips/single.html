@@ -13,7 +13,8 @@
 {% test_rule "can_change_snip" request object as canchange %}
 {% if canchange %}
 <a href='{% url "snip-edit" object.id %}'>Edit</a>
-<a href='{% url "snip-addtag" object.id %}'>Add character</a>
+<a href='{% url "snip-addtag" object.id %}'>Add characters</a>
+<a href='{% url "snip-removetag" object.id %}'>Remove characters</a>
 <a href='{% url "snip-delete" object.id %}'>Delete</a>
 {% endif %}
 <div><a href='{{ discordlink }}'>Link to first message</a></div>

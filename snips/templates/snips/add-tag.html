@@ -2,6 +2,7 @@
 
 {% block content %}
 <p>Adding a character to <a href='{{ object.get_absolute_url }}'>{{ object.title }}</a> by {{ object.author.name }}</p>
+<p><a href='{% url "createtag" %}?return={{ request.path }}'>Add a tag</a></p>
 <form method='POST'>
   {% csrf_token %}
   {{ form.as_p }}
