@@ -6,6 +6,8 @@ import urllib.parse
 import os
 import requests
 
+from snips.models import SnipAuthor
+
 
 API_BASE = 'https://discordapp.com/api'
 BASE_URL = 'http://localhost:8000'
@@ -56,6 +58,11 @@ def Authenticate(request, *args, **kwargs):
     request.session['discord_username'] = f'{data["username"]}#{data["discriminator"]}'
     request.session['discord_avatar'] = data['avatar']
 
+    try:
+        author = SnipAuthor.objects.get(discordid=data['id'])
+        author.name = request.session['discord_username']
+        author.save()
+    except SnipAuthor.DoesNotExist:
+        pass
+
     return HttpResponseRedirect('/')
-
-
