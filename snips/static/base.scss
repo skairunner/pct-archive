@@ -14,20 +14,43 @@ body {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
+  width: 100%;
   height: $header_height;
   color: $header_font_color;
+  padding: 5px;
 }
 
 .header-nav {
   height: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
+  align-items: center;
+  margin-right: 2rem;
 }
 
 .nav-element {
-  height: 100%;
-  margin: 2vh 1rem;
+  line-height: 2;
+  margin: 0 1rem;
+}
+
+span.left {
+}
+
+span.right {
+  margin-left: auto;
+}
+
+.discorduser {
+  background-color: rgba(0, 0, 0, 0.5);
+  height: 48px;
+}
+
+.logo {
+}
+
+img.cone {
+  height: 48px;
+  width: 48px;
 }
 
 #content {

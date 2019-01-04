@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-<h1>Snip index</h1>
+<h1>Snip index </h1>
 <a class='button' href='{% url "snip-search" %}'>Search</a>
 {% include "snips/pagination_fragment.html" with page_obj=page_obj list=object_list pageinfo=pageinfo %}
 <form method='POST'>
