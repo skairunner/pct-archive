@@ -3,17 +3,27 @@ from django.shortcuts import reverse
 import requests
 import mistletoe
 
+from .utility import elastic_filter
+
 
 class SnipAuthor(models.Model):
     name = models.CharField(max_length=100)
     discordid = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.name
+
 
 class CharacterTag(models.Model):
     tagname = models.CharField(max_length=255)
+    elasticname = models.CharField(max_length=255)
 
     def __str__(self):
         return self.tagname
+
+    def save(self, *args, **kwargs):
+        self.elasticname = elastic_filter(self.tagname)
+        super().save(*args, **kwargs)
 
 
 class Snip(models.Model):
@@ -39,7 +49,7 @@ class Snip(models.Model):
                     'title': self.title,
                     'summary': self.summary,
                     'content': self.content,
-                    'tags': [tag.tagname for tag in self.tags.all()],
+                    'tags': [tag.elasticname for tag in self.tags.all()],
                     'timeposted': self.timeposted.timestamp(),
                     'author': self.author.id
                     }

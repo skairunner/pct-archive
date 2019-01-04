@@ -12,7 +12,8 @@
     {% if not response.success %}
       Failed
     {% else %}
-      Took {{ response.took }}ms
+    <p>Took {{ response.took }}ms</p>
+    <p> {{ response.hits |length }} hits</p>
       {% for hit in response.hits %}
         <div class='searchresult'>
           {% include "snips/story-card_fragment.html" with snip=hit %}

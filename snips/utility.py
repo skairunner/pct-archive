@@ -1,3 +1,6 @@
+from re import sub
+import string
+
 # Django is dumb and won't let you access 
 # keys prefixed with underscores in templates.
 # Elasticsearch returns many, many fields with
@@ -17,3 +20,9 @@ def sanitize_keys(data):
                 newdata[key] = sanitize_keys(value)
         return newdata
     return data
+
+
+def elastic_filter(term):
+    term = term.lower().translate({ord(c): None for c in string.punctuation})
+    return term.replace(' ', '_')
+

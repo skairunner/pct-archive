@@ -20,6 +20,7 @@ class Tag:
         self.regexes = regexes
         try:
             self.obj = CharacterTag.objects.get(tagname=tag)
+            self.obj.save()
         except CharacterTag.DoesNotExist:
             self.obj = CharacterTag(tagname=tag)
             self.obj.save()

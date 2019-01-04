@@ -1,14 +1,15 @@
 from django import forms, template
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.http import HttpResponseRedirect
 from django.shortcuts import reverse
 from django.views.generic import ListView, DetailView,\
         UpdateView, DeleteView, FormView, CreateView, TemplateView
 from django.views.generic.detail import SingleObjectMixin
+import json
 import requests
 import rules
 
-from .models import Snip, CharacterTag
+from .models import Snip, CharacterTag, SnipAuthor
 from .utility import sanitize_keys
 
 
@@ -85,7 +86,7 @@ class TagForm(forms.Form):
         super().__init__(*args, **kwargs)
         for tag in tags:
             default = tag in checked if checked else False
-            self.fields[tag] = forms.BooleanField(
+            self.fields['tag_' + tag] = forms.BooleanField(
                     required=False,
                     initial=default,
                     label=tag)
@@ -207,8 +208,24 @@ class SnipDelete(DeleteView):
         return HttpResponseRedirect(success_url)
 
 
-class SearchForm(forms.Form):
-    searchphrase = forms.CharField()
+class SearchForm(TagForm):
+    searchphrase = forms.CharField(required=False)
+    author = forms.ModelChoiceField(
+            queryset=SnipAuthor.objects.order_by('name'),
+            required=False)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        # If both search phrase blank and no tags, error
+        has_tags = False
+        for key, val in cleaned_data.items():
+            if key.startswith('tag_'):
+                has_tags |= val
+        searchphrase = cleaned_data['searchphrase']
+        author = cleaned_data['author']
+        if (not has_tags) and (not author) and (not searchphrase):
+            raise ValidationError('You need to search for something', code='blank-form')
+        return cleaned_data
 
 
 class Search(FormView):
@@ -224,18 +241,33 @@ class Search(FormView):
             out['hits'].append(Snip.objects.get(id=hit['_id']))
         return out
 
+    def get_tags(self, form):
+        tags = []
+        for key, val in form.cleaned_data.items():
+            if key.startswith('tag_') and val:
+                tags.append(key[4:])
+        return [CharacterTag.objects.get(tagname=tag).elasticname for tag in tags]
+
     def form_valid(self, form):
-        payload = {
-                'query': {
-                    'simple_query_string': {
-                        'fields': ['content'],
-                        'query': form.cleaned_data['searchphrase']
-                        }
-                    }
-                }
+        tags = self.get_tags(form)
+        searchphrase = form.cleaned_data['searchphrase']
+        author = form.cleaned_data['author']
+
+        payload = {'query': {'bool': {}}}
+        bool_ = payload['query']['bool']
+        if searchphrase:
+            bool_['must'] = [{'simple_query_string': {'fields': ['title^3', 'summary^2', 'content'], 'query': 'searchphrase'}}]
+        if tags or author:
+            bool_['filter'] = []
+        for tag in tags:
+            bool_['filter'].append({'term': {'tags': tag}})
+        if author:
+            bool_['filter'].append({'term': {'author': author.id}})
+        payload['size'] = 50
+
         r = requests.get('http://localhost:9200/snips/_search', json=payload)
-        if r.status_code == 200:
-            data = r.json()
+        data = r.json()
+        if 'status' not in data:
             response = self.process_result(data)
             return self.render_to_response(self.get_context_data(searched=True, response=response))
         response = {
@@ -244,3 +276,10 @@ class Search(FormView):
         return self.render_to_response(self.get_context_data(
             searched=True,
             response=response))
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        tags = [tag.tagname for tag in
+                CharacterTag.objects.all().order_by('tagname')]
+        kwargs['tags'] = tags
+        return kwargs
