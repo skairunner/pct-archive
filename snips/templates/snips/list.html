@@ -4,6 +4,7 @@
 
 {% block content %}
 <h1>Snip index</h1>
+<a href='{% url "snip-search" %}'>Search</a>
 {% if is_paginated %}
   {% include "snips/pagination_fragment.html" with page_obj=page_obj list=object_list pageinfo=pageinfo %}
 {% endif %}
