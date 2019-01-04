@@ -13,6 +13,8 @@ rules = "*"
 psycopg2-binary = "*"
 mistletoe = "*"
 requests = "*"
+django-sass-processor = "*"
+libsass = "*"
 
 [requires]
 python_version = "3.6"

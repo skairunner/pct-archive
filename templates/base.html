@@ -2,24 +2,36 @@
 <html>
     <head>
         <title>{% block title %}{% endblock title %} [PCT Archive]</title>
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet"> 
+        {% load sass_tags %}
+        <link href='{% sass_src "base.scss" %}' rel='stylesheet' type='text/css'/>
+        {% block css %}{% endblock %}
     </head>
 
     <body>
-    <nav>
-        <span>
-            <a href='/'>Snips index</a>
-        </span>
-        <span>
+    <div class='header'>
+        <nav class='header-nav'>
+            <span class='nav-element'>
+                <a href='/'>Snips index</a>
+            </span>
             {% if request.session.authenticated %}
-            Logged in as
-            <img src='https://cdn.discordapp.com/avatars/{{ request.session.discord_id }}/{{ request.session.discord_avatar }}.png?size=32'>
-            {{ request.session.discord_username }}
-            <a href='{% url "logout" %}'>Logout</a>
+            <span class='nav-element'>
+                Logged in as
+                <img src='https://cdn.discordapp.com/avatars/{{ request.session.discord_id }}/{{ request.session.discord_avatar }}.png?size=32'>
+                {{ request.session.discord_username }}
+            </span>
+            <span class='nav-element'>
+                <a href='{% url "logout" %}'>Logout</a>
+            </span>
             {% else %}
-            <a href='{% url "auth-landing" %}'>Login with Discord!</a>
+            <span class='nav-element'>
+                <a href='{% url "auth-landing" %}'>Login with Discord!</a>
+            </span>
             {% endif %}
-        </span>
-    </nav>
-    {% block content %}{% endblock content %}
+        </nav>
+    </div>
+    <div id='content'>
+        {% block content %}{% endblock content %}
+    </div>
     </body>
 </html>

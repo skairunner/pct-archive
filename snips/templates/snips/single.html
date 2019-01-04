@@ -1,24 +1,31 @@
 {% extends "base.html" %}
 
 {% load rules %}
+{% load sass_tags %}
+
+{% block css %}
+<link href='{% sass_src "snip-single.scss" %}' rel='stylesheet' type='text/css'/>
+{% endblock %}
 
 {% block content %}
-<h1>{{ object.title }}</h1>
-<h2>{{ object.author.name }}</h2>
-<div class='characters'>Characters: 
+{% test_rule "can_change_snip" request object as canchange %}
+{% if canchange %}
+<div class='buttonrow'>
+  <a class='button' href='{% url "snip-edit" object.id %}'>Edit</a>
+  <a class='button' href='{% url "snip-addtag" object.id %}'>Add characters</a>
+  <a class='button' href='{% url "snip-removetag" object.id %}'>Remove characters</a>
+  <a class='button' href='{% url "snip-delete" object.id %}'>Delete</a>
+</div>
+{% endif %}
+<h1 class='snip-title'>{{ object.title }}<a class='discordlink' href='{{ discordlink }}'>(link)</a></h1>
+<h2 class='snip-author'>By {% include "snips/author-filter_fragment.html" with author=object.author %}</h2>
+<div class='characters'>Characters:
 {% for tag in object.tags.all %}
   <span class='character'>{{ tag.tagname }}</span>
 {% endfor %}
 </div>
-{% test_rule "can_change_snip" request object as canchange %}
-{% if canchange %}
-<a href='{% url "snip-edit" object.id %}'>Edit</a>
-<a href='{% url "snip-addtag" object.id %}'>Add characters</a>
-<a href='{% url "snip-removetag" object.id %}'>Remove characters</a>
-<a href='{% url "snip-delete" object.id %}'>Delete</a>
-{% endif %}
-<div><a href='{{ discordlink }}'>Link to first message</a></div>
-<div>
+<hr>
+<div class='snip'>
   {{ object.content_html |safe }}
 </div>
 {% endblock %}

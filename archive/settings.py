@@ -24,14 +24,16 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '25$=^)sn2!ohacl63*f7rb0zl#n87p3h=s@3t5k+*7r1$%12j+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ['ENVIRONMENT'] == 'DEV'
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    os.environ['HOST']
+]
 
 # Application definition
 
 INSTALLED_APPS = [
+    'sass_processor',
     'discordlogin',
     'snips',
     'rules.apps.AutodiscoverRulesConfig',
@@ -51,6 +53,15 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+STATIC_ROOT = os.environ['STATIC_ROOT']
+STATIC_URL = '/static/'
+
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'sass_processor.finders.CssFinder'
 ]
 
 ROOT_URLCONF = 'archive.urls'

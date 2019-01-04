@@ -2,15 +2,17 @@
   <div>
     Showing {{ pageinfo.snips_from }} to {{ pageinfo.snips_to }} of {{ pageinfo.total_snips }}
   </div>
+  {% if is_paginated %}
   <div class='page-navigation'>
     {% if page_obj.has_previous %}
-    <a href='{% url "snip-index" %}?page={{ page_obj.previous_page_number }}'>Previous</a>
+    <a href='{% url "snip-index" %}?page={{ page_obj.previous_page_number }}'>⮜</a>
     {% endif %}
     <span class='page-display'>
       Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
     </span>
     {% if page_obj.has_next %}
-    <a href='{% url "snip-index" %}?page={{ page_obj.next_page_number }}'>Next</a>
+    <a href='{% url "snip-index" %}?page={{ page_obj.next_page_number }}'>⮞</a>
     {% endif %}
   </div>
+  {% endif %}
 </div>

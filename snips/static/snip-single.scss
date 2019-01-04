@@ -1,0 +1,26 @@
+@import '_variables';
+
+.snip {
+  width: $snip-width;
+  max-width: $snip-max-width;
+}
+
+.snip-title {
+  margin-bottom: 0;
+  font-size: 37px;
+}
+
+.snip-author {
+  margin-top: 0;
+  font-size: 20px;
+}
+
+.discordlink {
+  vertical-align: super;
+  font-size: 33%;
+}
+
+.buttonrow {
+  margin: 2vh 0;
+}
+

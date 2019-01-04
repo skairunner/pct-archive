@@ -1,23 +1,27 @@
 {% extends "base.html" %}
 
 {% load rules %}
+{% load sass_tags %}
+
+{% block css %}
+<link href='{% sass_src "snip-list.scss" %}' rel='stylesheet' type='text/css'>
+{% endblock %}
 
 {% block content %}
 <h1>Snip index</h1>
-<a href='{% url "snip-search" %}'>Search</a>
-{% if is_paginated %}
-  {% include "snips/pagination_fragment.html" with page_obj=page_obj list=object_list pageinfo=pageinfo %}
-{% endif %}
-{% for snip in object_list %}
-{% test_rule "can_change_snip" request snip as canchange %}
-<div>
-  {% include "snips/story-card_fragment.html" with snip=snip %}
-  {% if canchange %}
-  <a href='{% url "snip-edit" snip.pk %}'><button>Edit</button></a>
-  {% endif %}
+<a class='button' href='{% url "snip-search" %}'>Search</a>
+{% include "snips/pagination_fragment.html" with page_obj=page_obj list=object_list pageinfo=pageinfo %}
+<div class='snips'>
+  {% for snip in object_list %}
+    {% test_rule "can_change_snip" request snip as canchange %}
+    <div class='snipcard'>
+      {% include "snips/story-card_fragment.html" with snip=snip %}
+      {% if canchange %}
+      <div><a class='button' href='{% url "snip-edit" snip.pk %}'>Edit</a></div>
+      {% endif %}
+    </div>
+  {% endfor %}
 </div>
-<hr>
-{% endfor %}
 {% if is_paginated %}
   {% include "snips/pagination_fragment.html" with page_obj=page_obj list=object_list snipcount=total_snips %}
 {% endif %}
