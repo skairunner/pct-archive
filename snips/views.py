@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import reverse
 from django.views.generic import ListView, DetailView,\
         UpdateView, DeleteView, FormView, CreateView, TemplateView
+from django.views.generic.edit import FormMixin
 from django.views.generic.detail import SingleObjectMixin
 import json
 import requests
@@ -13,10 +14,37 @@ from .models import Snip, CharacterTag, SnipAuthor
 from .utility import sanitize_keys
 
 
-class SnipsList(ListView):
+class PaginationForm(forms.Form):
+    perpage = forms.ChoiceField(choices=[(10, '10'), (25, '25'), (50, '50'), (100, '100')])
+    def __init__(self, *args, **kwargs):
+        initial = kwargs.pop('initial')
+        super().__init__(*args, **kwargs)
+        self.initial['perpage'] = initial
+
+
+class SnipsList(FormMixin, ListView):
     model = Snip
     template_name = 'snips/list.html'
-    paginate_by = 50
+    form_class = PaginationForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['initial'] = self.request.session.get('paginate', 50)
+        return kwargs
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        return self.form_invalid(form)
+
+    def form_valid(self, form):
+        self.request.session['paginate'] = int(form.cleaned_data['perpage'])
+        return HttpResponseRedirect(reverse('snip-index'))
+
+    def get_paginate_by(self, queryset):
+        self.paginate_by = self.request.session.get('paginate', 50)
+        return self.paginate_by
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -30,7 +58,8 @@ class SnipsList(ListView):
         kwargs = super().get_context_data(**kwargs)
         paginator = kwargs['page_obj']
         objs = kwargs['object_list']
-        snips_before = (paginator.number - 1) * self.paginate_by
+        paginate_by = self.get_paginate_by(self.get_queryset())
+        snips_before = (paginator.number - 1) * paginate_by
         kwargs['pageinfo'] = {
                 'total_snips': self.get_queryset().count(),
                 'snips_from': snips_before + 1,

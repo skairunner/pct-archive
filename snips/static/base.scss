@@ -78,6 +78,13 @@ a:active {
   border-radius: 5px;
 }
 
+input.button {
+  color: $button_font_color;
+  font-family: $headingfont;
+  border: none;
+  line-height: 1;
+}
+
 .button:link {
   color: $button_font_color;
 }

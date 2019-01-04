@@ -11,6 +11,11 @@
 <h1>Snip index</h1>
 <a class='button' href='{% url "snip-search" %}'>Search</a>
 {% include "snips/pagination_fragment.html" with page_obj=page_obj list=object_list pageinfo=pageinfo %}
+<form method='POST'>
+  {% csrf_token %}
+  {{ form.perpage }}
+  <input type='submit' class='button' value='Change'>
+</form>
 <div class='snips'>
   {% for snip in object_list %}
     {% test_rule "can_change_snip" request snip as canchange %}
