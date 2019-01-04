@@ -8,15 +8,7 @@
 {% endblock %}
 
 {% block content %}
-{% test_rule "can_change_snip" request object as canchange %}
-{% if canchange %}
-<div class='buttonrow'>
-  <a class='button' href='{% url "snip-edit" object.id %}'>Edit</a>
-  <a class='button' href='{% url "snip-addtag" object.id %}'>Add characters</a>
-  <a class='button' href='{% url "snip-removetag" object.id %}'>Remove characters</a>
-  <a class='button' href='{% url "snip-delete" object.id %}'>Delete</a>
-</div>
-{% endif %}
+{% include "snips/editbuttons_fragment.html" with request=request object=object %}
 <h1 class='snip-title'>{{ object.title }}<a class='discordlink' href='{{ discordlink }}'>(link)</a></h1>
 <h2 class='snip-author'>By {% include "snips/author-filter_fragment.html" with author=object.author %}</h2>
 <div class='characters'>Characters:

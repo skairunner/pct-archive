@@ -1,0 +1,23 @@
+input {
+  line-height: 2;
+}
+
+#id_searchphrase {
+  width: 100%;
+}
+
+.fold {
+  cursor: pointer;
+}
+
+.fold:hover {
+  color: #666;
+}
+
+.searchresults {
+  border-top: 1px solid black;
+}
+
+.searchresult {
+  border-bottom: 1px solid black;
+}

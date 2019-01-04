@@ -18,12 +18,9 @@
 </form>
 <div class='snips'>
   {% for snip in object_list %}
-    {% test_rule "can_change_snip" request snip as canchange %}
     <div class='snipcard'>
       {% include "snips/story-card_fragment.html" with snip=snip %}
-      {% if canchange %}
-      <div><a class='button' href='{% url "snip-edit" snip.pk %}'>Edit</a></div>
-      {% endif %}
+      {% include "snips/editbuttons_fragment.html" with request=request object=snip %}
     </div>
   {% endfor %}
 </div>

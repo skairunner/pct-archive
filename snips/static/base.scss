@@ -71,6 +71,9 @@ img.cone {
   font-size: 28px;
 }
 
+form {
+}
+
 a {
   text-decoration: none;
 }
@@ -106,6 +109,7 @@ input.button {
   font-family: $headingfont;
   border: none;
   line-height: 1;
+  cursor: pointer;
 }
 
 .button:link {

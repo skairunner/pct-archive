@@ -1,9 +1,21 @@
 {% extends "base.html" %}
 
 {% block content %}
+<p><em>Removing characters from <a href='{{ object.get_absolute_url }}'>{{ object.title }}</a></em></p>
 <form method='POST'>
   {% csrf_token %}
-  {{ form.as_p }}
-  <input type='submit' value='Remove'>
+  <table>
+    {% for field in form %}
+    <tr>
+      <td>
+        {{ field }}
+      </td>
+      <td>
+        {{ field.label }}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  <input class='button' type='submit' value='Remove'>
 </form>
 {% endblock %}

@@ -1,0 +1,10 @@
+{% load rules %}
+{% test_rule "can_change_snip" request object as canchange %}
+{% if canchange %}
+<div class='buttonrow'>
+  <a class='button' href='{% url "snip-edit" snip.id %}'>Edit</a>
+  <a class='button' href='{% url "snip-addtag" snip.id %}'>+Characters</a>
+  <a class='button' href='{% url "snip-removetag" snip.id %}'>−Characters</a>
+  <a class='button' href='{% url "snip-delete" snip.id %}'>Delete</a>
+</div>
+{% endif %}

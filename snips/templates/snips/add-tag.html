@@ -1,11 +1,22 @@
 {% extends "base.html" %}
 
 {% block content %}
-<p>Adding a character to <a href='{{ object.get_absolute_url }}'>{{ object.title }}</a> by {{ object.author.name }}</p>
-<p><a href='{% url "createtag" %}?return={{ request.path }}'>Add a tag</a></p>
+<p><em>Adding characters to <a href='{{ object.get_absolute_url }}'>{{ object.title }}</a> by {{ object.author.name }}</em></p>
+<p><a class='button' href='{% url "createtag" %}?return={{ request.path }}'>Make a new character</a></p>
 <form method='POST'>
   {% csrf_token %}
-  {{ form.as_p }}
-  <input type='submit' value='Add'>
+  <table>
+    {% for field in form %}
+    <tr>
+      <td>
+        {{ field }}
+      </td>
+      <td>
+        {{ field.label }}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  <input class='button' type='submit' value='Add'>
 </form>
 {% endblock %}
