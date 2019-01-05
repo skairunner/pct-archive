@@ -1,4 +1,5 @@
 <div class='cardline title'><a href='{{ snip.get_absolute_url }}'>{{ snip.title }}</a></div>
+<div class='cardline'>Posted {{ snip.timeposted |date:"l, Y-m-d H:i" }} (UTC)</div>
 <div class='cardline'>By {% include "snips/author-filter_fragment.html" with author=snip.author %}</div>
 <div class='cardline'>Words: {{ snip.content |wordcount }}</div>
 <div class='cardline'>Characters:

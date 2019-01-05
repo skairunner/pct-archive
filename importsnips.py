@@ -35,9 +35,8 @@ for tag, regex in TAGS.items():
     tagarray.append(Tag(tag, regex))
 
 
-for filename in os.listdir('sniparchive'):
-    with open(f'sniparchive/{filename}') as f:
-        data = json.load(f)
+# Take array of messages that form a snip, save.
+def process_snip(data):
     authorid = data[0]['authorid']
     authorname = data[0]['author']
 
@@ -56,7 +55,7 @@ for filename in os.listdir('sniparchive'):
     snip.author = author
     timestamp = datetime.datetime.strptime(data[0]['timestamp'], timefmt)
     snip.timeposted = timestamp.replace(tzinfo=pytz.UTC)
-    snip.title = filename.split('.')[0]
+    snip.title = f'snip {data[0]["msgid"]}'
     content = ''.join([datum['content'] for datum in data]).replace('```', '')
     snip.content = content
     snip.save()
@@ -83,3 +82,9 @@ for filename in os.listdir('sniparchive'):
                 snip.tags.add(tag.obj)
                 break
     snip.save()
+
+if __name__ =='__main__':
+    for filename in os.listdir('sniparchive'):
+        with open(f'sniparchive/{filename}') as f:
+            data = json.load(f)
+        process_snip(data)

@@ -44,7 +44,7 @@ class Snip(models.Model):
     def save(self, *args, **kwargs):
         self.content_html = mistletoe.markdown(self.content)
         # Also post it to Elasticsearch
-        if not self.isdeleted:
+        if not self.isdeleted and self.id:
             payload = {
                     'title': self.title,
                     'summary': self.summary,
