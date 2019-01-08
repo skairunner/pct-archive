@@ -15,7 +15,8 @@ mistletoe = "*"
 requests = "*"
 django-sass-processor = "*"
 libsass = "*"
-discord.py = "*"
+discord = {py = "*"}
+gunicorn = "*"
 
 [requires]
 python_version = "3.6"

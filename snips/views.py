@@ -285,7 +285,7 @@ class Search(FormView):
         payload = {'query': {'bool': {}}}
         bool_ = payload['query']['bool']
         if searchphrase:
-            bool_['must'] = [{'simple_query_string': {'fields': ['title^3', 'summary^2', 'content'], 'query': 'searchphrase'}}]
+            bool_['must'] = [{'simple_query_string': {'fields': ['title^3', 'summary^2', 'content'], 'query': searchphrase}}]
         if tags or author:
             bool_['filter'] = []
         for tag in tags:

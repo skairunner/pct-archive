@@ -37,7 +37,7 @@ class Snip(models.Model):
     isdeleted = models.BooleanField(default=False)
 
     def do_delete(self):
-        r = requests.delete(f'http://localhost:9200/snips/_doc/{self.id}')
+        r = requests.delete(f'http://localhost:9200/snips/doc/{self.id}')
         if r.status_code != 200:
             print(r.json())
 
@@ -53,7 +53,7 @@ class Snip(models.Model):
                     'timeposted': self.timeposted.timestamp(),
                     'author': self.author.id
                     }
-            r = requests.put(f'http://localhost:9200/snips/_doc/{self.id}', json=payload)
+            r = requests.put(f'http://localhost:9200/snips/doc/{self.id}', json=payload)
             if r.status_code != 200:
                 print(r.json())
         super().save(*args, **kwargs)
