@@ -18,6 +18,10 @@
 {% endfor %}
 </div>
 <hr>
+{% if object.summary %}
+<div>{{ object.summary }}</div>
+<hr>
+{% endif %}
 <div class='snip'>
   {{ object.content_html |safe }}
 </div>
