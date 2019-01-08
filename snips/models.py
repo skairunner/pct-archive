@@ -45,6 +45,7 @@ class Snip(models.Model):
 
     def save(self, *args, **kwargs):
         self.content_html = mistletoe.markdown(self.content)
+        super().save(*args, **kwargs)
         # Also post it to Elasticsearch
         if not self.isdeleted and self.id:
             payload = {
@@ -58,7 +59,6 @@ class Snip(models.Model):
             r = requests.put(f'http://localhost:9200/snips/doc/{self.id}', json=payload)
             if r.status_code != 200:
                 print(r.json())
-        super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('snip-view', args=[self.pk])
