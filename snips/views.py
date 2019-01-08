@@ -232,7 +232,7 @@ class SnipDelete(DeleteView):
         self.object = self.get_object()
         success_url = self.get_success_url()
         self.object.isdelete = True
-        self.do_delete()
+        self.object.do_delete()
         self.object.save()
         return HttpResponseRedirect(success_url)
 
