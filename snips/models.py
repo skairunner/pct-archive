@@ -15,7 +15,7 @@ class SnipAuthor(models.Model):
 
 
 class CharacterTag(models.Model):
-    tagname = models.CharField(max_length=255)
+    tagname = models.CharField(max_length=255, unique=True)
     elasticname = models.CharField(max_length=255)
 
     def __str__(self):

@@ -158,7 +158,7 @@ class AddTag(SingleObjectMixin, FormView):
     def form_valid(self, form):
         for key, val in form.cleaned_data.items():
             if val:
-                tag = CharacterTag.objects.get(tagname=key)
+                tag = CharacterTag.objects.get(tagname=key[4:])
                 self.object.tags.add(tag)
         return HttpResponseRedirect(self.object.get_absolute_url())
 
@@ -197,7 +197,7 @@ class RemoveTag(SingleObjectMixin, FormView):
     def form_valid(self, form):
         for key, val in form.cleaned_data.items():
             if val:
-                tag = CharacterTag.objects.get(tagname=key)
+                tag = CharacterTag.objects.get(tagname=key[4:])
                 self.object.tags.remove(tag)
         self.object.save()
         print(form.cleaned_data)
