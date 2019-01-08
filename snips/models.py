@@ -37,6 +37,8 @@ class Snip(models.Model):
     isdeleted = models.BooleanField(default=False)
 
     def do_delete(self):
+        self.isdeleted = True
+        self.save()
         r = requests.delete(f'http://localhost:9200/snips/doc/{self.id}')
         if r.status_code != 200:
             print(r.json())
