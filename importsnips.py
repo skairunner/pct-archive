@@ -55,7 +55,8 @@ def process_snip(data):
     snip.author = author
     timestamp = datetime.datetime.strptime(data[0]['timestamp'], timefmt)
     snip.timeposted = timestamp.replace(tzinfo=pytz.UTC)
-    snip.title = f'snip {data[0]["msgid"]}'
+    if not snip.title:
+        snip.title = f'snip {data[0]["msgid"]}'
     content = ''.join([datum['content'] for datum in data]).replace('```', '')
     snip.content = content
     snip.save()
@@ -86,5 +87,8 @@ def process_snip(data):
 if __name__ =='__main__':
     for filename in os.listdir('sniparchive'):
         with open(f'sniparchive/{filename}') as f:
-            data = json.load(f)
+            try:
+                data = json.load(f)
+            except json.decoder.JSONDecodeError as e:
+                print(filename); raise e
         process_snip(data)
