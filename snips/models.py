@@ -47,7 +47,7 @@ class Snip(models.Model):
 
     def save(self, *args, **kwargs):
         self.content_html = mistletoe.markdown(self.content)
-        self.slug = slugify(self.title)
+        self.slug = slugify(self.title)[:50]
         super().save(*args, **kwargs)
         # Also post it to Elasticsearch
         if not self.isdeleted and self.id:
