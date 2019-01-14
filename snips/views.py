@@ -14,6 +14,11 @@ from .models import Snip, CharacterTag, SnipAuthor
 from .utility import sanitize_keys
 
 
+def RedirectToSluggedSnip(request, *args, **kwargs):
+    obj = Snip.objects.get(pk=kwargs['pk'])
+    return HttpResponseRedirect(obj.get_absolute_url())
+
+
 class PaginationForm(forms.Form):
     perpage = forms.ChoiceField(choices=[(10, '10'), (25, '25'), (50, '50'), (100, '100')])
     def __init__(self, *args, **kwargs):

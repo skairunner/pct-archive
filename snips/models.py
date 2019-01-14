@@ -1,5 +1,6 @@
 from django.db import models
 from django.shortcuts import reverse
+from django.utils.text import slugify
 import requests
 import mistletoe
 
@@ -31,6 +32,7 @@ class Snip(models.Model):
     timeposted = models.DateTimeField()
     title = models.CharField(max_length=255)
     summary = models.CharField(max_length=255, default='', blank=True)
+    slug = models.SlugField(default='')
     content = models.TextField()
     content_html = models.TextField(default='')
     tags = models.ManyToManyField(CharacterTag)
@@ -45,6 +47,7 @@ class Snip(models.Model):
 
     def save(self, *args, **kwargs):
         self.content_html = mistletoe.markdown(self.content)
+        self.slug = slugify(self.title)
         super().save(*args, **kwargs)
         # Also post it to Elasticsearch
         if not self.isdeleted and self.id:
@@ -61,7 +64,7 @@ class Snip(models.Model):
                 print(r.json())
 
     def get_absolute_url(self):
-        return reverse('snip-view', args=[self.pk])
+        return reverse('snip-view', args=[self.pk, self.slug])
 
 
 class DiscordMessage(models.Model):
