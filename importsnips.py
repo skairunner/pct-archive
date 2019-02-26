@@ -57,7 +57,7 @@ def process_snip(data):
     snip.timeposted = timestamp.replace(tzinfo=pytz.UTC)
     if not snip.title:
         snip.title = f'snip {data[0]["msgid"]}'
-    content = ''.join([datum['content'] for datum in data]).replace('```', '')
+    content = re.sub(r'```(markdown|md)?\n?', '', '\n'.join([datum['content'] for datum in data]))
     snip.content = content
     snip.save()
 
