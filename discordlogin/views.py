@@ -61,9 +61,11 @@ def Authenticate(request, *args, **kwargs):
     try:
         author = SnipAuthor.objects.get(discordid=data['id'])
         author.name = request.session['discord_username']
+        # Also, save author id for link purposes
+        request.session['author_id'] = author.id
         author.save()
     except SnipAuthor.DoesNotExist:
-        pass
+        request.session['author_id'] = ''
 
     return HttpResponseRedirect('/')
 

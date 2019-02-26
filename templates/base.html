@@ -20,8 +20,10 @@
             {% if request.session.authenticated %}
             <span class='nav-element right'>
                 <span class='discorduser'>
+                    <a href='{% url "snip-index" %}?author={{ request.session.author_id }}'>
                     <img src='https://cdn.discordapp.com/avatars/{{ request.session.discord_id }}/{{ request.session.discord_avatar }}.png?size=32'>
                     {{ request.session.discord_username }}
+                    </a>
                 </span>
             </span>
             <span class='nav-element'>
