@@ -50,6 +50,7 @@ class Snip(models.Model):
         self.slug = slugify(self.title)[:50]
         super().save(*args, **kwargs)
         # Also post it to Elasticsearch
+        return
         if not self.isdeleted and self.id:
             payload = {
                     'title': self.title,

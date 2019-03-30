@@ -18,6 +18,11 @@ SNIP_DIFF_REPORT_CHANNEL = '406892517380980747'
 logging.basicConfig(level=logging.INFO)
 client = discord.Client()
 
+if '--dry-run' in sys.argv:
+    IS_DRY_RUN = True
+else:
+    IS_DRY_RUN = False
+
 timefmt = '%Y-%m-%d %H:%M:%S'
 async def get_logs():
     channel = client.get_channel(CHANNEL_ID)
@@ -81,10 +86,11 @@ async def get_logs():
         # Retrieve new total per author
         totalsnips = {}
         for authorid in newsnips:
-            totalsnips[authorid] = get_snip_count(authorid)
+            totalsnips[authorid] = get_snip_count(authorid) + newsnips[authorid]
 
-        for snip in snips:
-            process_snip(snip)
+        if not IS_DRY_RUN:
+            for snip in snips:
+                process_snip(snip)
 
         # Print success
         channel = client.get_channel(SNIP_DIFF_REPORT_CHANNEL)
@@ -97,6 +103,8 @@ async def get_logs():
             lines.append(formatstring.format(name, delta, total))
         lines.append('```')
         content = '\n'.join(lines)
+        if IS_DRY_RUN:
+            content = '===THIS IS A DRY RUN===\n' + content
         await client.send_message(channel, content)
 
     print('Retrieved {} messages, stored.'.format(counter))
