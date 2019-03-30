@@ -86,6 +86,14 @@ def process_snip(data):
                 break
     snip.save()
 
+
+def get_snip_count(authorid):
+    try:
+        return SnipAuthor.objects.get(discordid=authorid).snip_set.count()
+    except SnipAuthor.DoesNotExist:
+        return 0
+
+
 if __name__ =='__main__':
     for filename in os.listdir('sniparchive'):
         with open(f'sniparchive/{filename}') as f:

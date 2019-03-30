@@ -11,9 +11,10 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'archive.settings')
 django.setup()
 
 from snips.models import DiscordMessage
-from importsnips import process_snip
+from importsnips import process_snip, get_snip_count
 
 CHANNEL_ID = '406611842257911828'
+SNIP_DIFF_REPORT_CHANNEL = '406892517380980747'
 logging.basicConfig(level=logging.INFO)
 client = discord.Client()
 
@@ -66,8 +67,37 @@ async def get_logs():
                 else:
                     SNIP.append(msg)
         snips.append(SNIP)
+        # Count # of new snips, and the total for each author
+        newsnips = {}
+        names = {}
+        for snip in snips:
+            authorid = snip[0]['authorid']
+            if authorid not in newsnips:
+                newsnips[authorid] = 1
+            else:
+                newsnips[authorid] += 1
+            names[authorid] = snip[0]['author']
+
+        # Retrieve new total per author
+        totalsnips = {}
+        for authorid in newsnips:
+            totalsnips[authorid] = get_snip_count(authorid)
+
         for snip in snips:
             process_snip(snip)
+
+        # Print success
+        channel = client.get_channel(SNIP_DIFF_REPORT_CHANNEL)
+        formatstring = '{:<32}  {:>2}  {:>3}'
+        lines = ['Snip Archive Update ```', formatstring.format('Username', '+', '=')]
+        for authorid in newsnips:
+            name = names[authorid]
+            delta = newsnips[authorid]
+            total = totalsnips[authorid]
+            lines.append(formatstring.format(name, delta, total))
+        lines.append('```')
+        content = '\n'.join(lines)
+        await client.send_message(channel, content)
 
     print('Retrieved {} messages, stored.'.format(counter))
     sys.exit(0)
