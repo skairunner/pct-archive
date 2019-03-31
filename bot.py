@@ -106,6 +106,11 @@ async def get_logs():
         if IS_DRY_RUN:
             content = '===THIS IS A DRY RUN===\n' + content
         await client.send_message(channel, content)
+    else:  # No snips to update
+        content = 'No new snips since last run.'
+        if IS_DRY_RUN:
+            content = '===THIS IS A DRY RUN===\n' + content
+        await client.send_message(channel, content)
 
     print('Retrieved {} messages, stored.'.format(counter))
     sys.exit(0)
