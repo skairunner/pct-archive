@@ -95,7 +95,7 @@ async def get_logs():
         # Print success
         channel = client.get_channel(SNIP_DIFF_REPORT_CHANNEL)
         formatstring = '{:<32}  {:>2}  {:>3}'
-        lines = ['Snip Archive Update ```', formatstring.format('Username', '+', '=')]
+        lines = ['**Snip Archive Update** ```', formatstring.format('Username', '+', '=')]
         for authorid in newsnips:
             name = names[authorid]
             delta = newsnips[authorid]
