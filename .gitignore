@@ -4,6 +4,13 @@
 # Symlink
 sniparchive
 
+# Static files
+snips/static
+staticroot
+
+# Swap
+*.swp
+
 # Created by https://www.gitignore.io
 
 ### OSX ###
